@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.DashboardMapper">
+
+    <!-- 获取总待收款金额 -->
+    <select id="getTotalPendingAmount" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(total_amount), 0)
+        FROM orders
+        WHERE status = 'AWAITING_PAYMENT'
+    </select>
+
+    <!-- 获取近30天订单数 -->
+    <select id="getRecentOrderCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE create_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    </select>
+
+    <!-- 获取总客户数 -->
+    <select id="getTotalCustomerCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM customer
+    </select>
+
+    <!-- 获取总样品数 -->
+    <select id="getTotalSampleCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM sample
+    </select>
+
+    <!-- 获取订单状态分布 -->
+    <select id="getOrderStatusDistribution" resultType="java.util.Map">
+        SELECT
+            status AS name,
+            COUNT(*) AS value
+        FROM orders
+        GROUP BY status
+    </select>
+
+    <!-- 获取待生产订单产品 -->
+    <select id="getPendingProducts" resultType="com.example.demo.entity.Dashboard$OrderProduct">
+        SELECT
+            o.order_number AS orderNumber,
+            s.model AS model,
+            s.color_code AS color,
+            o.total_quantity AS quantity,
+            COALESCE(c.company_name, '待选择') AS customer
+        FROM orders o
+        JOIN sample s ON o.sample_id = s.id
+        LEFT JOIN customer c ON s.customer_id = c.id
+        WHERE o.status = 'PENDING'
+        ORDER BY o.create_date DESC
+        LIMIT 5
+    </select>
+
+    <!-- 获取生产中订单产品 -->
+    <select id="getProducingProducts" resultType="com.example.demo.entity.Dashboard$OrderProduct">
+        SELECT
+            o.order_number AS orderNumber,
+            s.model AS model,
+            s.color_code AS color,
+            o.total_quantity AS quantity,
+            COALESCE(c.company_name, '待选择') AS customer
+        FROM orders o
+        JOIN sample s ON o.sample_id = s.id
+        LEFT JOIN customer c ON s.customer_id = c.id
+        WHERE o.status IN ('IN_PROGRESS', 'PRODUCING')
+        ORDER BY o.create_date DESC
+        LIMIT 5
+    </select>
+
+    <!-- 获取待发货订单产品 -->
+    <select id="getShippingProducts" resultType="com.example.demo.entity.Dashboard$OrderProduct">
+        SELECT
+            o.order_number AS orderNumber,
+            s.model AS model,
+            s.color_code AS color,
+            o.total_quantity AS quantity,
+            COALESCE(c.company_name, '待选择') AS customer
+        FROM orders o
+        JOIN sample s ON o.sample_id = s.id
+        LEFT JOIN customer c ON s.customer_id = c.id
+        WHERE o.status IN ('SHIPPED', 'READY_TO_SHIP')
+        ORDER BY o.create_date DESC
+        LIMIT 5
+    </select>
+
+    <!-- 获取员工通讯录 -->
+    <select id="getEmployees" resultType="com.example.demo.entity.Dashboard$Employee">
+        SELECT
+            name AS name,
+            COALESCE(phone, '') AS phone
+        FROM employee
+        ORDER BY hire_date DESC
+        LIMIT 5
+    </select>
+</mapper>

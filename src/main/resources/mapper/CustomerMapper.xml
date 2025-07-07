@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.CustomerMapper">
+
+    <resultMap id="CustomerResultMap" type="com.example.demo.entity.Customer">
+        <id property="id" column="id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <collection property="addresses" ofType="com.example.demo.entity.CustomerAddress"
+                    select="getAddressesByCustomerId" column="id"/>
+        <collection property="contacts" ofType="com.example.demo.entity.CustomerContact"
+                    select="getContactsByCustomerId" column="id"/>
+    </resultMap>
+
+    <resultMap id="CustomerAddressResultMap" type="com.example.demo.entity.CustomerAddress">
+        <id property="id" column="id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="address" column="address"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="CustomerContactResultMap" type="com.example.demo.entity.CustomerContact">
+        <id property="id" column="id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="contactName" column="contact_name"/>
+        <result property="phone" column="phone"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="getById" resultMap="CustomerResultMap">
+        SELECT * FROM customer WHERE id = #{id}
+    </select>
+
+    <select id="listByCompanyName" resultMap="CustomerResultMap">
+        SELECT * FROM customer
+        <if test="companyName != null and companyName != ''">
+            WHERE company_name LIKE CONCAT('%', #{companyName}, '%')
+        </if>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO customer(company_name)
+        VALUES(#{companyName})
+    </insert>
+
+    <update id="update">
+        UPDATE customer
+        SET company_name = #{companyName}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM customer WHERE id = #{id}
+    </delete>
+
+    <select id="getAddressesByCustomerId" resultMap="CustomerAddressResultMap">
+        SELECT * FROM customer_address
+        WHERE customer_id = #{customerId}
+    </select>
+
+    <insert id="insertAddress" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO customer_address(customer_id, address)
+        VALUES(#{customerId}, #{address})
+    </insert>
+
+    <delete id="deleteAddressesByCustomerId">
+        DELETE FROM customer_address
+        WHERE customer_id = #{customerId}
+    </delete>
+
+    <select id="getContactsByCustomerId" resultMap="CustomerContactResultMap">
+        SELECT * FROM customer_contact
+        WHERE customer_id = #{customerId}
+    </select>
+
+    <insert id="insertContact" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO customer_contact(customer_id, contact_name, phone)
+        VALUES(#{customerId}, #{contactName}, #{phone})
+    </insert>
+
+    <delete id="deleteContactsByCustomerId">
+        DELETE FROM customer_contact
+        WHERE customer_id = #{customerId}
+    </delete>
+
+    <select id="selectAll" resultMap="CustomerResultMap">
+        SELECT * FROM customer
+        ORDER BY id DESC
+    </select>
+</mapper>

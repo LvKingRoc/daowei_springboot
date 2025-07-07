@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.EmployeeMapper">
+
+    <resultMap id="employeeResultMap" type="com.example.demo.entity.Employee">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="gender" column="gender" />
+        <result property="phone" column="phone" />
+        <result property="email" column="email" />
+        <result property="idCard" column="id_card" />
+        <result property="hireDate" column="hire_date" />
+    </resultMap>
+
+    <select id="findById" resultMap="employeeResultMap">
+        SELECT * FROM employee WHERE id = #{id}
+    </select>
+
+    <select id="findAll" resultMap="employeeResultMap">
+        SELECT * FROM employee
+    </select>
+
+    <insert id="insert" parameterType="com.example.demo.entity.Employee" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO employee(name, gender, phone, email, id_card, hire_date)
+        VALUES(#{name}, #{gender}, #{phone}, #{email}, #{idCard}, #{hireDate})
+    </insert>
+
+    <update id="update" parameterType="com.example.demo.entity.Employee">
+        UPDATE employee
+        SET name=#{name}, gender=#{gender}, phone=#{phone},
+            email=#{email}, id_card=#{idCard}, hire_date=#{hireDate}
+        WHERE id=#{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM employee WHERE id = #{id}
+    </delete>
+</mapper>
