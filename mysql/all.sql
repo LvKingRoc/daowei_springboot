@@ -1,19 +1,3 @@
-/*
- Navicat Premium Dump SQL
-
- Source Server         : ljp
- Source Server Type    : MySQL
- Source Server Version : 80038 (8.0.38)
- Source Host           : localhost:3306
- Source Schema         : daowei
-
- Target Server Type    : MySQL
- Target Server Version : 80038 (8.0.38)
- File Encoding         : 65001
-
- Date: 08/07/2025 01:21:47
-*/
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
