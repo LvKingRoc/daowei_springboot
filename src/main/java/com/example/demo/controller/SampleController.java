@@ -1,8 +1,11 @@
 package com.example.demo.controller;
 
+import com.example.demo.annotation.Log;
 import com.example.demo.common.ApiResponse;
+import com.example.demo.dto.DeleteResultDTO;
 import com.example.demo.entity.Sample;
 import com.example.demo.service.SampleService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -60,22 +63,35 @@ public class SampleController {
     }
 
     /**
+     * 分页获取样品列表
+     * 
+     * @param pageNum 页码（默认1）
+     * @param pageSize 每页数量（默认20）
+     * @return 分页样品数据
+     */
+    @GetMapping("/page")
+    public ResponseEntity<ApiResponse> getByPage(
+            @RequestParam(defaultValue = "1") int pageNum,
+            @RequestParam(defaultValue = "20") int pageSize) {
+        PageInfo<Sample> pageInfo = sampleService.getByPage(pageNum, pageSize);
+        return ResponseEntity.ok(ApiResponse.success(pageInfo));
+    }
+
+    /**
      * 创建新样品，同时支持上传样品图片
      * 使用multipart/form-data格式接收数据
      * 
      * @param sampleJson 样品信息的JSON字符串
      * @param image 样品图片文件（可选）
-     * @return 创建结果的HTTP响应，包含成功信息或错误信息
+     * @return 创建结果的HTTP响应
      */
+    @Log(module = "样品管理", action = "CREATE", description = "创建样品")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse> create(
             @RequestPart(value = "sample", required = true) String sampleJson,
             @RequestPart(value = "image", required = false) MultipartFile image) {
-        // 调用服务创建样品
-        ApiResponse response = sampleService.createSample(sampleJson, image);
-        return response.isSuccess() ? 
-            ResponseEntity.ok(response) : // 创建成功返回200 OK
-            ResponseEntity.badRequest().body(response); // 创建失败返回400 Bad Request
+        Sample createdSample = sampleService.createSample(sampleJson, image);
+        return ResponseEntity.ok(ApiResponse.success("样品创建成功", createdSample));
     }
 
     /**
@@ -85,33 +101,32 @@ public class SampleController {
      * @param id 要更新的样品ID
      * @param sampleJson 更新后的样品信息JSON字符串
      * @param image 新的样品图片文件（可选）
-     * @return 更新结果的HTTP响应，包含成功信息或错误信息
+     * @return 更新结果的HTTP响应
      */
+    @Log(module = "样品管理", action = "UPDATE", description = "更新样品", entityType = "sample", idParamIndex = 0)
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse> update(
             @PathVariable Long id,
             @RequestPart(value = "sample", required = true) String sampleJson,
             @RequestPart(value = "image", required = false) MultipartFile image) {
-        // 调用服务更新样品
-        ApiResponse response = sampleService.updateSample(id, sampleJson, image);
-        return response.isSuccess() ? 
-            ResponseEntity.ok(response) : // 更新成功返回200 OK
-            ResponseEntity.badRequest().body(response); // 更新失败返回400 Bad Request
+        Sample updatedSample = sampleService.updateSample(id, sampleJson, image);
+        return ResponseEntity.ok(ApiResponse.success("样品更新成功", updatedSample));
     }
 
     /**
      * 删除指定样品
      * 
      * @param id 要删除的样品ID
-     * @return 删除结果的HTTP响应，包含成功信息或错误信息
+     * @return 删除结果的HTTP响应
      */
+    @Log(module = "样品管理", action = "DELETE", description = "删除样品", entityType = "sample", idParamIndex = 0)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable Long id) {
-        // 调用服务删除样品
-        ApiResponse response = sampleService.delete(id);
-        return response.isSuccess() ? 
-            ResponseEntity.ok(response) : // 删除成功返回200 OK
-            ResponseEntity.badRequest().body(response); // 删除失败返回400 Bad Request
+        DeleteResultDTO result = sampleService.delete(id);
+        String message = result.getDescription() != null 
+            ? "样品删除成功，" + result.getDescription()
+            : "样品删除成功";
+        return ResponseEntity.ok(ApiResponse.success(message, result));
     }
 
     /**
@@ -122,9 +137,8 @@ public class SampleController {
      */
     @PostMapping("/fix-null-customers")
     public ResponseEntity<ApiResponse> fixNullCustomers() {
-        // 调用服务修复空客户ID的样品
-        ApiResponse response = sampleService.fixNullCustomers();
-        return ResponseEntity.ok(response);
+        int fixedCount = sampleService.fixNullCustomers();
+        return ResponseEntity.ok(ApiResponse.success("修复完成，共修复 " + fixedCount + " 个样品", fixedCount));
     }
 
     /**
@@ -135,7 +149,6 @@ public class SampleController {
      */
     @GetMapping("/{id}/orders/count")
     public ResponseEntity<ApiResponse> getOrderCount(@PathVariable Long id) {
-        // 调用服务获取样品关联的订单数量
         int count = sampleService.getOrderCount(id);
         return ResponseEntity.ok(ApiResponse.success("获取订单数量成功", count));
     }
@@ -144,14 +157,12 @@ public class SampleController {
      * 删除指定样品的图片
      * 
      * @param id 样品ID
-     * @return 删除图片操作结果的HTTP响应，包含成功信息或错误信息
+     * @return 删除图片操作结果的HTTP响应
      */
+    @Log(module = "样品管理", action = "UPDATE", description = "删除样品图片", entityType = "sample", idParamIndex = 0)
     @DeleteMapping("/{id}/image")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long id) {
-        // 调用服务删除样品图片
-        ApiResponse response = sampleService.deleteImage(id);
-        return response.isSuccess() ? 
-            ResponseEntity.ok(response) : // 删除成功返回200 OK
-            ResponseEntity.badRequest().body(response); // 删除失败返回400 Bad Request
+        sampleService.deleteImage(id);
+        return ResponseEntity.ok(ApiResponse.success("图片删除成功", null));
     }
 }

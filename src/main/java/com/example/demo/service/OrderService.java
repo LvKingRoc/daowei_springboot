@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.common.ApiResponse;
 import com.example.demo.entity.Order;
 
 import java.util.List;
@@ -31,23 +30,22 @@ public interface OrderService {
      * 保存新订单
      * 
      * @param order 要保存的订单对象
-     * @return 保存结果的API响应
+     * @return 保存后的订单对象（包含生成的ID）
      */
-    ApiResponse save(Order order);
+    Order save(Order order);
 
     /**
      * 更新现有订单信息
      * 
      * @param order 更新后的订单对象
-     * @return 更新结果的API响应
+     * @return 更新后的订单对象
      */
-    ApiResponse update(Order order);
+    Order update(Order order);
 
     /**
      * 删除指定订单
      * 
      * @param id 要删除的订单ID
-     * @return 删除结果的API响应
      */
-    ApiResponse delete(Long id);
+    void delete(Long id);
 }

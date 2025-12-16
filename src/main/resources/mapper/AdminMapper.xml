@@ -7,6 +7,7 @@
         <result property="username" column="username"/>
         <result property="password" column="password"/>
         <result property="name" column="name"/>
+        <result property="tokenVersion" column="token_version"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
@@ -14,4 +15,12 @@
     <select id="findByUsername" parameterType="string" resultMap="adminResultMap">
         SELECT * FROM admin WHERE username = #{username}
     </select>
+    
+    <select id="findById" parameterType="long" resultMap="adminResultMap">
+        SELECT * FROM admin WHERE id = #{id}
+    </select>
+    
+    <update id="updateTokenVersion">
+        UPDATE admin SET token_version = #{tokenVersion} WHERE id = #{id}
+    </update>
 </mapper>

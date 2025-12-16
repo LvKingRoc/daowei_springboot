@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.annotation.Log;
 import com.example.demo.common.ApiResponse;
 import com.example.demo.entity.Order;
 import com.example.demo.service.OrderService;
@@ -57,14 +58,13 @@ public class OrderController {
      * 创建新订单
      * 
      * @param order 订单信息对象
-     * @return 创建结果的HTTP响应，包含成功信息或错误信息
+     * @return 创建结果的HTTP响应
      */
+    @Log(module = "订单管理", action = "CREATE", description = "创建订单")
     @PostMapping
     public ResponseEntity<ApiResponse> create(@RequestBody Order order) {
-        ApiResponse response = orderService.save(order);
-        return response.isSuccess() ? 
-            ResponseEntity.ok(response) : 
-            ResponseEntity.badRequest().body(response);
+        Order savedOrder = orderService.save(order);
+        return ResponseEntity.ok(ApiResponse.success("订单创建成功", savedOrder));
     }
 
     /**
@@ -72,28 +72,26 @@ public class OrderController {
      * 
      * @param id 订单ID
      * @param order 更新后的订单信息对象
-     * @return 更新结果的HTTP响应，包含成功信息或错误信息
+     * @return 更新结果的HTTP响应
      */
+    @Log(module = "订单管理", action = "UPDATE", description = "更新订单", entityType = "order", idParamIndex = 0)
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody Order order) {
         order.setId(id);
-        ApiResponse response = orderService.update(order);
-        return response.isSuccess() ? 
-            ResponseEntity.ok(response) : 
-            ResponseEntity.badRequest().body(response);
+        Order updatedOrder = orderService.update(order);
+        return ResponseEntity.ok(ApiResponse.success("订单更新成功", updatedOrder));
     }
 
     /**
      * 删除订单
      * 
      * @param id 要删除的订单ID
-     * @return 删除结果的HTTP响应，包含成功信息或错误信息
+     * @return 删除结果的HTTP响应
      */
+    @Log(module = "订单管理", action = "DELETE", description = "删除订单", entityType = "order", idParamIndex = 0)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable Long id) {
-        ApiResponse response = orderService.delete(id);
-        return response.isSuccess() ? 
-            ResponseEntity.ok(response) : 
-            ResponseEntity.badRequest().body(response);
+        orderService.delete(id);
+        return ResponseEntity.ok(ApiResponse.success("订单删除成功", id));
     }
 }

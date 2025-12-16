@@ -8,34 +8,43 @@
         <result property="password" column="password"/>
         <result property="name" column="name"/>
         <result property="phone" column="phone"/>
+        <result property="tokenVersion" column="token_version"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
+    <select id="findById" parameterType="long" resultMap="userResultMap">
+        SELECT * FROM "user" WHERE id = #{id}
+    </select>
+
     <select id="findByUsername" parameterType="string" resultMap="userResultMap">
-        SELECT * FROM user WHERE username = #{username}
+        SELECT * FROM "user" WHERE username = #{username}
     </select>
 
     <select id="findAll" resultMap="userResultMap">
-        SELECT * FROM user ORDER BY create_time DESC
+        SELECT * FROM "user" ORDER BY create_time DESC
     </select>
 
-    <insert id="insertUser" parameterType="com.example.demo.entity.User">
-        INSERT INTO user (username, password, name, phone, create_time, update_time)
-        VALUES (#{username}, #{password}, #{name}, #{phone}, #{createTime}, #{updateTime})
+    <insert id="insertUser" parameterType="com.example.demo.entity.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO "user" (username, password, name, phone, token_version, create_time, update_time)
+        VALUES (#{username}, #{password}, #{name}, #{phone}, 0, NOW(), NOW())
     </insert>
 
     <update id="updateUser" parameterType="com.example.demo.entity.User">
-        UPDATE user
+        UPDATE "user"
         SET username = #{username},
             password = #{password},
             name = #{name},
             phone = #{phone},
-            update_time = #{updateTime}
+            update_time = NOW()
         WHERE id = #{id}
     </update>
 
     <delete id="deleteUser" parameterType="long">
-        DELETE FROM user WHERE id = #{id}
+        DELETE FROM "user" WHERE id = #{id}
     </delete>
+    
+    <update id="updateTokenVersion" parameterType="com.example.demo.entity.User">
+        UPDATE "user" SET token_version = #{tokenVersion} WHERE id = #{id}
+    </update>
 </mapper>

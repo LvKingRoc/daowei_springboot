@@ -1,13 +1,21 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.common.ApiResponse;
+import com.example.demo.entity.OperationLog;
 import com.example.demo.entity.User;
 import com.example.demo.mapper.UserMapper;
+import com.example.demo.service.OperationLogService;
 import com.example.demo.service.UserLoginService;
+import com.example.demo.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户登录与管理服务实现类
@@ -25,12 +33,22 @@ public class UserLoginServiceImpl implements UserLoginService {
     private UserMapper userMapper;
 
     /**
+     * JWT工具类
+     * 用于生成和验证JWT Token
+     */
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private OperationLogService operationLogService;
+
+    /**
      * 用户登录验证实现
      * 根据用户名查询用户，验证密码是否匹配
      *
      * @param username 用户名
      * @param password 密码
-     * @return 登录结果的API响应，成功则包含用户信息，失败则包含错误信息
+     * @return 登录结果的API响应，成功则包含用户信息和Token，失败则包含错误信息
      */
     @Override
     public ApiResponse login(String username, String password) {
@@ -48,8 +66,67 @@ public class UserLoginServiceImpl implements UserLoginService {
             return ApiResponse.error("密码错误");
         }
 
-        // 登录成功，返回用户信息
-        return ApiResponse.success("登录成功", user);
+        // 更新 tokenVersion（单点登录：每次登录生成新版本号，旧 token 失效）
+        Integer newTokenVersion = (user.getTokenVersion() != null ? user.getTokenVersion() : 0) + 1;
+        userMapper.updateTokenVersion(user.getId(), newTokenVersion);
+
+        // 生成 JWT Token（包含新版本号）
+        String token = jwtUtil.generateToken(user.getId(), user.getUsername(), "user", newTokenVersion);
+
+        // 构建返回数据
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", user.getId());
+        data.put("username", user.getUsername());
+        data.put("name", user.getName());
+        data.put("phone", user.getPhone());
+        data.put("token", token);
+        data.put("role", "user");
+
+        // 记录登录日志
+        saveLoginLog(user.getId(), user.getUsername(), "user", true, "用户登录成功");
+
+        // 登录成功，返回用户信息和Token
+        return ApiResponse.success("登录成功", data);
+    }
+
+    /**
+     * 记录登录日志
+     */
+    private void saveLoginLog(Long userId, String username, String role, boolean success, String description) {
+        try {
+            OperationLog log = new OperationLog();
+            log.setUserId(userId);
+            log.setUsername(username);
+            log.setRole(role);
+            log.setModule("系统登录");
+            log.setAction("LOGIN");
+            log.setDescription(description);
+            log.setStatus(success ? 1 : 0);
+
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                log.setRequestUrl(request.getRequestURI());
+                log.setRequestMethod(request.getMethod());
+                log.setIpAddress(getIpAddress(request));
+                log.setUserAgent(request.getHeader("User-Agent"));
+            }
+
+            operationLogService.save(log);
+        } catch (Exception e) {
+            // 日志保存失败不影响主业务
+        }
+    }
+
+    private String getIpAddress(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
     }
 
     /**

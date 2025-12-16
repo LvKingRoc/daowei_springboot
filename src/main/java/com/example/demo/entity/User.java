@@ -11,6 +11,7 @@ public class User {
     private String password;
     private String name;
     private String phone;
+    private Integer tokenVersion;  // Token 版本号，用于单点登录
     private Date createTime;
     private Date updateTime;
 

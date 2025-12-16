@@ -2,6 +2,8 @@ package com.example.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * SpringBoot应用程序的入口类
@@ -9,6 +11,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 该注解是@Configuration、@EnableAutoConfiguration和@ComponentScan的组合注解
  */
 @SpringBootApplication
+@EnableAsync  // 启用异步支持，用于日志异步写入
+@EnableScheduling  // 启用定时任务支持
 public class Application {
     /**
      * 应用程序的主方法，是程序的入口点

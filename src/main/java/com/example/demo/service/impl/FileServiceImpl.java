@@ -35,6 +35,11 @@ public class FileServiceImpl implements FileService {
     @Override
     public String saveFile(MultipartFile file, String fileName) throws IOException {
         // 创建目标文件对象
+        // 确保上传目录存在，不存在则创建
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
         File dest = new File(uploadDir + fileName);
         // 将上传的文件保存到目标位置
         file.transferTo(dest);

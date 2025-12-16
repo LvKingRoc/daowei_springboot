@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.ApiResponse;
 import com.example.demo.entity.Dashboard;
 import com.example.demo.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,11 +29,12 @@ public class DashboardController {
      * 获取仪表盘数据
      * 该方法返回系统的统计信息，如客户数量、订单数量、样板数量等
      * 
-     * @return 包含统计数据的Dashboard对象
+     * @return 包含统计数据的ApiResponse对象
      */
     @GetMapping
-    public Dashboard getDashboard() {
+    public ResponseEntity<ApiResponse> getDashboard() {
         // 调用服务获取仪表盘数据
-        return dashboardService.getDashboard();
+        Dashboard dashboard = dashboardService.getDashboard();
+        return ResponseEntity.ok(ApiResponse.success(dashboard));
     }
 }

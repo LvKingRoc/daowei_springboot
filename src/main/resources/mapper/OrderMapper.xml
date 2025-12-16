@@ -20,14 +20,14 @@
 
     <select id="getById" resultMap="OrderMap">
         SELECT o.*, s.model, s.color_code, s.image, c.company_name
-        FROM `orders` o
+        FROM orders o
         LEFT JOIN sample s ON o.sample_id = s.id
         LEFT JOIN customer c ON s.customer_id = c.id
         WHERE o.id = #{id}
     </select>
 
     <insert id="insert" parameterType="com.example.demo.entity.Order" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO `orders` (
+        INSERT INTO orders (
             order_number, sample_id, total_quantity, total_amount,
             create_date, delivery_date, status, create_time, update_time
         )
@@ -38,7 +38,7 @@
     </insert>
 
     <update id="update" parameterType="com.example.demo.entity.Order">
-        UPDATE `orders`
+        UPDATE orders
         SET
             order_number = #{orderNumber},
             total_quantity = #{totalQuantity},
@@ -51,12 +51,12 @@
     </update>
 
     <delete id="delete">
-        DELETE FROM `orders` WHERE id = #{id}
+        DELETE FROM orders WHERE id = #{id}
     </delete>
 
     <select id="listAll" resultMap="OrderMap">
         SELECT o.*, s.model, s.color_code, s.image, c.company_name
-        FROM `orders` o
+        FROM orders o
         LEFT JOIN sample s ON o.sample_id = s.id
         LEFT JOIN customer c ON s.customer_id = c.id
         ORDER BY o.id DESC
@@ -64,7 +64,7 @@
 
     <select id="listBySampleId" resultMap="OrderMap">
         SELECT o.*, s.model, s.color_code, s.image, c.company_name
-        FROM `orders` o
+        FROM orders o
         LEFT JOIN sample s ON o.sample_id = s.id
         LEFT JOIN customer c ON s.customer_id = c.id
         WHERE o.sample_id = #{sampleId}
@@ -72,7 +72,7 @@
 
     <select id="countByCompanyName" resultType="int">
         SELECT COUNT(*)
-        FROM `orders` o
+        FROM orders o
         LEFT JOIN sample s ON o.sample_id = s.id
         LEFT JOIN customer c ON s.customer_id = c.id
         WHERE c.company_name = #{companyName}

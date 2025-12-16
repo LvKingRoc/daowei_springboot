@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.annotation.Log;
 import com.example.demo.common.ApiResponse;
 import com.example.demo.entity.LoginRequest;
 import com.example.demo.entity.User;
@@ -59,6 +60,7 @@ public class UserLoginController {
      * @param user 用户信息对象
      * @return 添加结果的HTTP响应，包含成功信息或错误信息
      */
+    @Log(module = "用户管理", action = "CREATE", description = "添加用户")
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addUser(@RequestBody User user) {
         // 调用服务添加用户
@@ -74,6 +76,7 @@ public class UserLoginController {
      * @param user 更新后的用户信息对象
      * @return 更新结果的HTTP响应，包含成功信息或错误信息
      */
+    @Log(module = "用户管理", action = "UPDATE", description = "更新用户")
     @PutMapping("/update")
     public ResponseEntity<ApiResponse> updateUser(@RequestBody User user) {
         // 调用服务更新用户
@@ -89,6 +92,7 @@ public class UserLoginController {
      * @param id 要删除的用户ID
      * @return 删除结果的HTTP响应，包含成功信息或错误信息
      */
+    @Log(module = "用户管理", action = "DELETE", description = "删除用户", entityType = "user", idParamIndex = 0)
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id) {
         // 调用服务删除用户

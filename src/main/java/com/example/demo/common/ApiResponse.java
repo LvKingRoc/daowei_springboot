@@ -51,13 +51,13 @@ public class ApiResponse {
     }
 
     /**
-     * 创建成功响应，仅包含数据
+     * 创建成功响应，仅包含数据（使用默认消息"操作成功"）
      *
      * @param data 响应数据
      * @return 成功的API响应对象
      */
     public static ApiResponse success(Object data) {
-        return new ApiResponse(true, null, data, 200);
+        return new ApiResponse(true, "操作成功", data, 200);
     }
 
     /**

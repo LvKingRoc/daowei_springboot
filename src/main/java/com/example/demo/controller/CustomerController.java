@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.annotation.Log;
 import com.example.demo.common.ApiResponse;
+import com.example.demo.dto.DeleteResultDTO;
 import com.example.demo.entity.Customer;
 import com.example.demo.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,15 +63,13 @@ public class CustomerController {
      * 创建新客户
      * 
      * @param customer 客户信息对象
-     * @return 创建结果的响应体，包含成功信息或错误信息
+     * @return 创建结果的响应体
      */
+    @Log(module = "客户管理", action = "CREATE", description = "创建客户")
     @PostMapping
     public ResponseEntity<ApiResponse> createCustomer(@RequestBody Customer customer) {
-        // 保存新客户信息
-        ApiResponse response = customerService.save(customer);
-        return response.isSuccess() ? 
-            ResponseEntity.ok(response) : // 创建成功返回200 OK
-            ResponseEntity.badRequest().body(response); // 创建失败返回400 Bad Request
+        Customer savedCustomer = customerService.save(customer);
+        return ResponseEntity.ok(ApiResponse.success("客户创建成功", savedCustomer));
     }
 
     /**
@@ -77,32 +77,30 @@ public class CustomerController {
      * 
      * @param id 客户ID
      * @param customer 更新后的客户信息对象
-     * @return 更新结果的响应体，包含成功信息或错误信息
+     * @return 更新结果的响应体
      */
+    @Log(module = "客户管理", action = "UPDATE", description = "更新客户", entityType = "customer", idParamIndex = 0)
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse> updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
-        // 设置要更新的客户ID
         customer.setId(id);
-        // 更新客户信息
-        ApiResponse response = customerService.update(customer);
-        return response.isSuccess() ? 
-            ResponseEntity.ok(response) : // 更新成功返回200 OK
-            ResponseEntity.badRequest().body(response); // 更新失败返回400 Bad Request
+        Customer updatedCustomer = customerService.update(customer);
+        return ResponseEntity.ok(ApiResponse.success("客户更新成功", updatedCustomer));
     }
 
     /**
      * 删除指定客户
      * 
      * @param id 要删除的客户ID
-     * @return 删除结果的响应体，包含成功信息或错误信息
+     * @return 删除结果的响应体
      */
+    @Log(module = "客户管理", action = "DELETE", description = "删除客户", entityType = "customer", idParamIndex = 0)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteCustomer(@PathVariable Long id) {
-        // 删除指定ID的客户
-        ApiResponse response = customerService.delete(id);
-        return response.isSuccess() ? 
-            ResponseEntity.ok(response) : // 删除成功返回200 OK
-            ResponseEntity.badRequest().body(response); // 删除失败返回400 Bad Request
+        DeleteResultDTO result = customerService.delete(id);
+        String message = result.getDescription() != null 
+            ? "客户删除成功，" + result.getDescription()
+            : "客户删除成功";
+        return ResponseEntity.ok(ApiResponse.success(message, result));
     }
     
     /**

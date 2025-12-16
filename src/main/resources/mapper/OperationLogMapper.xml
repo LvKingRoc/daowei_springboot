@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.OperationLogMapper">
+
+    <resultMap id="OperationLogMap" type="com.example.demo.entity.OperationLog">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="role" column="role"/>
+        <result property="module" column="module"/>
+        <result property="action" column="action"/>
+        <result property="description" column="description"/>
+        <result property="method" column="method"/>
+        <result property="requestUrl" column="request_url"/>
+        <result property="requestMethod" column="request_method"/>
+        <result property="requestParams" column="request_params"/>
+        <result property="oldData" column="old_data"/>
+        <result property="newData" column="new_data"/>
+        <result property="responseData" column="response_data"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="userAgent" column="user_agent"/>
+        <result property="status" column="status"/>
+        <result property="errorMsg" column="error_msg"/>
+        <result property="duration" column="duration"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.example.demo.entity.OperationLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO operation_log (
+            user_id, username, role, module, action, description,
+            method, request_url, request_method, request_params, old_data, new_data, response_data,
+            ip_address, user_agent, status, error_msg, duration, create_time
+        )
+        VALUES (
+            #{userId}, #{username}, #{role}, #{module}, #{action}, #{description},
+            #{method}, #{requestUrl}, #{requestMethod}, #{requestParams}, #{oldData}, #{newData}, #{responseData},
+            #{ipAddress}, #{userAgent}, #{status}, #{errorMsg}, #{duration}, NOW()
+        )
+    </insert>
+
+    <select id="selectAll" resultMap="OperationLogMap">
+        SELECT * FROM operation_log ORDER BY create_time DESC
+    </select>
+
+    <select id="selectByCondition" resultMap="OperationLogMap">
+        SELECT * FROM operation_log
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE '%' || #{username} || '%'
+            </if>
+            <if test="module != null and module != ''">
+                AND module = #{module}
+            </if>
+            <if test="action != null and action != ''">
+                AND action = #{action}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND create_time &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectById" resultMap="OperationLogMap">
+        SELECT * FROM operation_log WHERE id = #{id}
+    </select>
+
+    <delete id="deleteByDate">
+        DELETE FROM operation_log WHERE create_time &lt; #{date}
+    </delete>
+
+    <select id="count" resultType="int">
+        SELECT COUNT(*) FROM operation_log
+    </select>
+
+    <select id="selectByUsernameAndModule" resultMap="OperationLogMap">
+        SELECT * FROM operation_log 
+        WHERE username = #{username} AND module = #{module}
+        LIMIT 1
+    </select>
+
+    <update id="update" parameterType="com.example.demo.entity.OperationLog">
+        UPDATE operation_log SET
+            action = #{action},
+            description = #{description},
+            response_data = #{responseData},
+            status = #{status},
+            error_msg = #{errorMsg},
+            create_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -72,4 +72,10 @@
         FROM sample
         WHERE customer_id = #{customerId}
     </select>
+    
+    <update id="updateCustomerIdByOldCustomerId">
+        UPDATE sample
+        SET customer_id = #{newCustomerId}, update_time = NOW()
+        WHERE customer_id = #{oldCustomerId}
+    </update>
 </mapper>

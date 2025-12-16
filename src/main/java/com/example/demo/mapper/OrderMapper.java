@@ -8,11 +8,11 @@ import java.util.List;
 
 @Mapper
 public interface OrderMapper {
-    Order getById(Long id);
+    Order getById(@Param("id") Long id);
     List<Order> listBySampleId(@Param("sampleId") Long sampleId);
     int insert(Order order);
     int update(Order order);
-    int delete(Long id);
+    int delete(@Param("id") Long id);
     List<Order> listAll();
     
     /**

@@ -9,6 +9,7 @@ public class Admin {
     private String username;
     private String password;
     private String name;
+    private Integer tokenVersion;  // Token 版本号，用于单点登录
     private Date createTime;
     private Date updateTime;
 

@@ -1,16 +1,15 @@
 package com.example.demo.service;
 
-import com.example.demo.common.ApiResponse;
+import com.example.demo.dto.DeleteResultDTO;
 import com.example.demo.entity.Sample;
+import com.github.pagehelper.PageInfo;
 import org.springframework.web.multipart.MultipartFile;
-
 
 import java.util.List;
 
 /**
  * 样品服务接口
  * 提供样品信息管理相关的业务逻辑
- * 包括样品的增删改查、图片处理以及关联数据的处理
  */
 public interface SampleService {
     
@@ -20,6 +19,15 @@ public interface SampleService {
      * @return 样品列表
      */
     List<Sample> getSamples();
+
+    /**
+     * 分页获取样品列表
+     * 
+     * @param pageNum 页码
+     * @param pageSize 每页数量
+     * @return 分页样品数据
+     */
+    PageInfo<Sample> getByPage(int pageNum, int pageSize);
 
     /**
      * 根据ID获取样品详细信息
@@ -49,26 +57,26 @@ public interface SampleService {
      * 删除指定样品及其关联资源
      * 
      * @param id 要删除的样品ID
-     * @return 删除结果的API响应
+     * @return 删除结果DTO
      */
-    ApiResponse delete(Long id);
+    DeleteResultDTO delete(Long id);
 
     /**
      * 修复数据库中客户ID为空的样品记录
      * 用于数据维护和修复
      * 
-     * @return 修复操作结果的API响应
+     * @return 修复的记录数
      */
-    ApiResponse fixNullCustomers();
+    int fixNullCustomers();
 
     /**
      * 创建新样品，同时处理图片上传
      * 
      * @param sampleJson 样品信息的JSON字符串
      * @param image 样品图片文件（可选）
-     * @return 创建结果的API响应
+     * @return 创建后的样品对象
      */
-    ApiResponse createSample(String sampleJson, MultipartFile image);
+    Sample createSample(String sampleJson, MultipartFile image);
 
     /**
      * 更新现有样品信息，同时处理图片上传
@@ -76,9 +84,9 @@ public interface SampleService {
      * @param id 要更新的样品ID
      * @param sampleJson 更新后的样品信息JSON字符串
      * @param image 新的样品图片文件（可选）
-     * @return 更新结果的API响应
+     * @return 更新后的样品对象
      */
-    ApiResponse updateSample(Long id, String sampleJson, MultipartFile image);
+    Sample updateSample(Long id, String sampleJson, MultipartFile image);
 
     /**
      * 获取指定样品关联的订单数量
@@ -92,7 +100,6 @@ public interface SampleService {
      * 删除指定样品的图片
      * 
      * @param id 样品ID
-     * @return 删除图片操作结果的API响应
      */
-    ApiResponse deleteImage(Long id);
+    void deleteImage(Long id);
 }

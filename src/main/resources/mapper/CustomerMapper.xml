@@ -37,7 +37,7 @@
     <select id="listByCompanyName" resultMap="CustomerResultMap">
         SELECT * FROM customer
         <if test="companyName != null and companyName != ''">
-            WHERE company_name LIKE CONCAT('%', #{companyName}, '%')
+            WHERE company_name LIKE '%' || #{companyName} || '%'
         </if>
     </select>
 

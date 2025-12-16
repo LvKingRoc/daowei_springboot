@@ -13,7 +13,7 @@
     <select id="getRecentOrderCount" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM orders
-        WHERE create_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        WHERE create_date >= NOW() - INTERVAL '30 days'
     </select>
 
     <!-- 获取总客户数 -->

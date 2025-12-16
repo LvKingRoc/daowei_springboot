@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.common.ApiResponse;
+import com.example.demo.dto.DeleteResultDTO;
 import com.example.demo.entity.Customer;
 import java.util.List;
 
@@ -30,25 +30,25 @@ public interface CustomerService {
      * 保存新客户信息
      * 
      * @param customer 要保存的客户对象
-     * @return 保存结果的API响应
+     * @return 保存后的客户对象（包含生成的ID）
      */
-    ApiResponse save(Customer customer);
+    Customer save(Customer customer);
 
     /**
      * 更新现有客户信息
      * 
      * @param customer 更新后的客户对象
-     * @return 更新结果的API响应
+     * @return 更新后的客户对象
      */
-    ApiResponse update(Customer customer);
+    Customer update(Customer customer);
 
     /**
      * 删除指定客户
      * 
      * @param id 要删除的客户ID
-     * @return 删除结果的API响应
+     * @return 删除结果DTO
      */
-    ApiResponse delete(Long id);
+    DeleteResultDTO delete(Long id);
     
     /**
      * 获取指定客户的订单数量

@@ -22,12 +22,12 @@
 
     <insert id="insert" parameterType="com.example.demo.entity.Employee" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO employee(name, gender, phone, email, id_card, hire_date)
-        VALUES(#{name}, #{gender}, #{phone}, #{email}, #{idCard}, #{hireDate})
+        VALUES(#{name}, #{gender}::gender_enum, #{phone}, #{email}, #{idCard}, #{hireDate})
     </insert>
 
     <update id="update" parameterType="com.example.demo.entity.Employee">
         UPDATE employee
-        SET name=#{name}, gender=#{gender}, phone=#{phone},
+        SET name=#{name}, gender=#{gender}::gender_enum, phone=#{phone},
             email=#{email}, id_card=#{idCard}, hire_date=#{hireDate}
         WHERE id=#{id}
     </update>

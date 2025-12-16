@@ -1,7 +1,8 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.common.ApiResponse;
+import com.example.demo.dto.DeleteResultDTO;
 import com.example.demo.entity.*;
+import com.example.demo.exception.BusinessException;
 import com.example.demo.mapper.CustomerMapper;
 import com.example.demo.mapper.OrderMapper;
 import com.example.demo.mapper.SampleMapper;
@@ -74,38 +75,20 @@ public class CustomerServiceImpl implements CustomerService {
 
     /**
      * 保存客户信息
-     * 根据客户ID是否存在，决定进行插入还是更新操作
      * 同时处理客户的地址和联系人信息
      *
      * @param customer 要保存的客户对象
-     * @return 保存结果的API响应
+     * @return 保存后的客户对象（包含生成的ID）
      */
     @Override
     @Transactional
-    public ApiResponse save(Customer customer) {
-        try {
-            if (customer.getId() == null) {
-                // 新客户，执行插入操作
-                customerMapper.insert(customer);
-                Long customerId = customer.getId();
-                // 保存客户的关联数据（地址和联系人）
-                saveCustomerDetails(customer, customerId);
-                return ApiResponse.success("客户创建成功", customerId);
-            } else {
-                // 现有客户，执行更新操作
-                customerMapper.update(customer);
-                Long customerId = customer.getId();
-                // 先删除旧的关联数据
-                customerMapper.deleteAddressesByCustomerId(customerId);
-                customerMapper.deleteContactsByCustomerId(customerId);
-                // 保存新的关联数据
-                saveCustomerDetails(customer, customerId);
-                return ApiResponse.success("客户更新成功", customerId);
-            }
-        } catch (Exception e) {
-            // 发生异常时回滚事务
-            return ApiResponse.error("保存客户失败：" + e.getMessage());
-        }
+    public Customer save(Customer customer) {
+        // 新客户，执行插入操作
+        customerMapper.insert(customer);
+        Long customerId = customer.getId();
+        // 保存客户的关联数据（地址和联系人）
+        saveCustomerDetails(customer, customerId);
+        return getById(customerId);
     }
 
     /**
@@ -113,47 +96,63 @@ public class CustomerServiceImpl implements CustomerService {
      * 更新客户基本信息，并替换其所有地址和联系人
      *
      * @param customer 更新后的客户对象
-     * @return 更新结果的API响应
+     * @return 更新后的客户对象
      */
     @Override
     @Transactional
-    public ApiResponse update(Customer customer) {
-        try {
-            // 更新客户基本信息
-            customerMapper.update(customer);
-            Long customerId = customer.getId();
-            // 先删除旧的关联数据
-            customerMapper.deleteAddressesByCustomerId(customerId);
-            customerMapper.deleteContactsByCustomerId(customerId);
-            // 保存新的关联数据
-            saveCustomerDetails(customer, customerId);
-            return ApiResponse.success("客户更新成功", customerId);
-        } catch (Exception e) {
-            // 发生异常时回滚事务
-            return ApiResponse.error("更新客户失败：" + e.getMessage());
+    public Customer update(Customer customer) {
+        if (customer.getId() == null) {
+            throw new BusinessException("客户ID不能为空");
         }
+        // 检查客户是否存在
+        Customer existing = customerMapper.getById(customer.getId());
+        if (existing == null) {
+            throw new BusinessException("客户不存在", 404);
+        }
+        // 更新客户基本信息
+        customerMapper.update(customer);
+        Long customerId = customer.getId();
+        // 先删除旧的关联数据
+        customerMapper.deleteAddressesByCustomerId(customerId);
+        customerMapper.deleteContactsByCustomerId(customerId);
+        // 保存新的关联数据
+        saveCustomerDetails(customer, customerId);
+        return getById(customerId);
     }
 
     /**
      * 删除指定客户及其所有关联数据
+     * 如果客户有关联的样品，则将样品的客户ID设置为默认值（ID=2，表示"无"）
      *
      * @param id 要删除的客户ID
-     * @return 删除结果的API响应
+     * @return 删除结果DTO
      */
     @Override
     @Transactional
-    public ApiResponse delete(Long id) {
-        try {
-            // 先删除客户的关联数据
-            customerMapper.deleteAddressesByCustomerId(id);
-            customerMapper.deleteContactsByCustomerId(id);
-            // 删除客户基本信息
-            customerMapper.delete(id);
-            return ApiResponse.success("客户删除成功", id);
-        } catch (Exception e) {
-            // 发生异常时回滚事务
-            return ApiResponse.error("删除客户失败：" + e.getMessage());
+    public DeleteResultDTO delete(Long id) {
+        // 检查客户是否存在
+        Customer customer = customerMapper.getById(id);
+        if (customer == null) {
+            throw new BusinessException("客户不存在", 404);
         }
+        
+        // 检查是否有关联的样品，如果有则将其客户ID改为默认值（2=无）
+        int sampleCount = sampleMapper.countByCustomerId(id);
+        if (sampleCount > 0) {
+            // 将关联样品的客户ID设置为2（表示"无"客户）
+            sampleMapper.updateCustomerIdByOldCustomerId(id, 2L);
+        }
+        
+        // 删除客户的关联数据（地址和联系人）
+        customerMapper.deleteAddressesByCustomerId(id);
+        customerMapper.deleteContactsByCustomerId(id);
+        // 删除客户基本信息
+        customerMapper.delete(id);
+        
+        String description = sampleCount > 0 
+            ? sampleCount + "个关联样品已转为无客户状态"
+            : null;
+        return DeleteResultDTO.of(id, sampleCount, description);
     }
 
     /**

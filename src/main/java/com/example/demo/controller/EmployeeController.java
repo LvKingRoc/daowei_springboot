@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.annotation.Log;
 import com.example.demo.common.ApiResponse;
 import com.example.demo.entity.Employee;
 import com.example.demo.service.EmployeeService;
@@ -72,6 +73,7 @@ public class EmployeeController {
      * @param employee 员工信息对象
      * @return 添加结果的HTTP响应，包含成功信息或错误信息
      */
+    @Log(module = "员工管理", action = "CREATE", description = "添加员工")
     @PostMapping
     public ResponseEntity<ApiResponse> addEmployee(@RequestBody Employee employee) {
         // 调用服务添加员工
@@ -88,6 +90,7 @@ public class EmployeeController {
      * @param employee 更新后的员工信息对象
      * @return 更新结果的HTTP响应，包含成功信息或错误信息
      */
+    @Log(module = "员工管理", action = "UPDATE", description = "更新员工", entityType = "employee", idParamIndex = 0)
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse> updateEmployee(@PathVariable Integer id, @RequestBody Employee employee) {
         // 设置要更新的员工ID
@@ -105,6 +108,7 @@ public class EmployeeController {
      * @param id 要删除的员工ID
      * @return 删除结果的HTTP响应，包含成功信息或错误信息
      */
+    @Log(module = "员工管理", action = "DELETE", description = "删除员工", entityType = "employee", idParamIndex = 0)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteEmployee(@PathVariable Integer id) {
         // 调用服务删除员工
