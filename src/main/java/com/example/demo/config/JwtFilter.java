@@ -91,6 +91,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             // 验证 Token 版本号（单点登录检查）
             Integer dbTokenVersion = null;
+            String operatorName = null;  // 操作人姓名
             if ("admin".equals(role)) {
                 Admin admin = adminMapper.findById(userId);
                 if (admin == null) {
@@ -98,6 +99,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     return;
                 }
                 dbTokenVersion = admin.getTokenVersion();
+                operatorName = admin.getName();
             } else {
                 User user = userMapper.findById(userId);
                 if (user == null) {
@@ -105,6 +107,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     return;
                 }
                 dbTokenVersion = user.getTokenVersion();
+                operatorName = user.getName();
             }
 
             // 版本号不匹配，说明账号在其他设备登录
@@ -116,6 +119,7 @@ public class JwtFilter extends OncePerRequestFilter {
             // 将用户信息存入请求属性，供后续使用
             request.setAttribute("userId", userId);
             request.setAttribute("username", username);
+            request.setAttribute("name", operatorName);  // 操作人姓名
             request.setAttribute("role", role);
 
             filterChain.doFilter(request, response);

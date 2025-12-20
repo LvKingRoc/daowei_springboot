@@ -213,7 +213,7 @@ public class SampleServiceImpl implements SampleService {
                 String role = (String) request.getAttribute("role");
 
                 log.setUserId(userId);
-                log.setUsername(username);
+                log.setOperatorName(username);
                 log.setRole(role);
                 log.setRequestUrl(request.getRequestURI());
                 log.setRequestMethod(request.getMethod());

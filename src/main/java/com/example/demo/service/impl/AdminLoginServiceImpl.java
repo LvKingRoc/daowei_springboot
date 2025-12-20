@@ -72,7 +72,7 @@ public class AdminLoginServiceImpl implements AdminLoginService {
         data.put("role", "admin");
 
         // 记录登录日志
-        saveLoginLog(admin.getId(), admin.getUsername(), "admin", true, "管理员登录成功");
+        saveLoginLog(admin.getId(), admin.getName(), "admin", true, "管理员登录成功");
 
         return ApiResponse.success("登录成功", data);
     }
@@ -80,11 +80,11 @@ public class AdminLoginServiceImpl implements AdminLoginService {
     /**
      * 记录登录日志
      */
-    private void saveLoginLog(Long userId, String username, String role, boolean success, String description) {
+    private void saveLoginLog(Long userId, String operatorName, String role, boolean success, String description) {
         try {
             OperationLog log = new OperationLog();
             log.setUserId(userId);
-            log.setUsername(username);
+            log.setOperatorName(operatorName);
             log.setRole(role);
             log.setModule("系统登录");
             log.setAction("LOGIN");

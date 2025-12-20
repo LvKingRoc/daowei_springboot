@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -9,8 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 /**
@@ -100,4 +106,69 @@ public class ImageController {
                 return "application/octet-stream";  // 默认二进制流格式
         }
     }
-} 
+
+    /**
+     * 获取缩略图（压缩后的图片，减少流量消耗）
+     * 
+     * @param fileName 图片文件名
+     * @param size 缩略图尺寸（默认80像素）
+     * @return 压缩后的缩略图
+     */
+    @GetMapping("/thumb/{fileName:.+}")
+    public ResponseEntity<Resource> getThumbnail(
+            @PathVariable String fileName,
+            @RequestParam(defaultValue = "80") int size) {
+        try {
+            String filePath = uploadDir + fileName;
+            File file = new File(filePath);
+            
+            if (!file.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // 读取原图
+            BufferedImage originalImage = ImageIO.read(file);
+            if (originalImage == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // 计算缩放比例，保持宽高比
+            int originalWidth = originalImage.getWidth();
+            int originalHeight = originalImage.getHeight();
+            int targetWidth, targetHeight;
+            
+            if (originalWidth > originalHeight) {
+                targetWidth = size;
+                targetHeight = (int) ((double) originalHeight / originalWidth * size);
+            } else {
+                targetHeight = size;
+                targetWidth = (int) ((double) originalWidth / originalHeight * size);
+            }
+            
+            // 生成缩略图
+            BufferedImage thumbnail = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2d = thumbnail.createGraphics();
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2d.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+            g2d.dispose();
+            
+            // 转换为字节数组
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(thumbnail, "jpg", baos);
+            byte[] imageBytes = baos.toByteArray();
+            
+            // 设置响应头，允许缓存缩略图
+            HttpHeaders headers = new HttpHeaders();
+            headers.setCacheControl("max-age=86400");  // 缓存24小时
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            headers.setContentLength(imageBytes.length);
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(new ByteArrayResource(imageBytes));
+                    
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+}

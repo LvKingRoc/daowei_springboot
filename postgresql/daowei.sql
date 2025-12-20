@@ -191,7 +191,7 @@ DROP TABLE IF EXISTS operation_log CASCADE;
 CREATE TABLE operation_log (
   id BIGSERIAL PRIMARY KEY,
   user_id BIGINT DEFAULT NULL,
-  username VARCHAR(50) DEFAULT NULL,
+  operator_name VARCHAR(50) DEFAULT NULL,
   role VARCHAR(20) DEFAULT NULL,
   module VARCHAR(50) NOT NULL,
   action VARCHAR(50) NOT NULL,
@@ -212,7 +212,7 @@ CREATE TABLE operation_log (
 );
 
 CREATE INDEX idx_operation_log_user_id ON operation_log(user_id);
-CREATE INDEX idx_operation_log_username ON operation_log(username);
+CREATE INDEX idx_operation_log_operator_name ON operation_log(operator_name);
 CREATE INDEX idx_operation_log_module ON operation_log(module);
 CREATE INDEX idx_operation_log_action ON operation_log(action);
 CREATE INDEX idx_operation_log_create_time ON operation_log(create_time);

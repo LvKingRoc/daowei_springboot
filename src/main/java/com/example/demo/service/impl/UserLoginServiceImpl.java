@@ -83,7 +83,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         data.put("role", "user");
 
         // 记录登录日志
-        saveLoginLog(user.getId(), user.getUsername(), "user", true, "用户登录成功");
+        saveLoginLog(user.getId(), user.getName(), "user", true, "用户登录成功");
 
         // 登录成功，返回用户信息和Token
         return ApiResponse.success("登录成功", data);
@@ -92,11 +92,11 @@ public class UserLoginServiceImpl implements UserLoginService {
     /**
      * 记录登录日志
      */
-    private void saveLoginLog(Long userId, String username, String role, boolean success, String description) {
+    private void saveLoginLog(Long userId, String operatorName, String role, boolean success, String description) {
         try {
             OperationLog log = new OperationLog();
             log.setUserId(userId);
-            log.setUsername(username);
+            log.setOperatorName(operatorName);
             log.setRole(role);
             log.setModule("系统登录");
             log.setAction("LOGIN");

@@ -30,6 +30,7 @@ public class DdnsUpdateService {
     private String lastUpdateResult = "未更新";
     private int successCount = 0;
     private int failCount = 0;
+    private int ipChangeCount = 0;  // IP地址变化次数
 
     @Autowired
     private OperationLogService operationLogService;
@@ -43,10 +44,10 @@ public class DdnsUpdateService {
     private boolean ddnsEnabled;
 
     /**
-     * 定时任务：每15分钟执行一次DDNS更新
-     * fixedRate = 900000 表示每900秒（15分钟）执行一次
+     * 定时任务：每1小时执行一次DDNS更新
+     * fixedRate = 3600000 表示每3600秒（1小时）执行一次
      */
-    @Scheduled(fixedRate = 900000, initialDelay = 10000)
+    @Scheduled(fixedRate = 3600000, initialDelay = 10000)
     public void updateDdns() {
         if (!ddnsEnabled) {
             logger.debug("DDNS更新已禁用，跳过本次更新");
@@ -125,26 +126,30 @@ public class DdnsUpdateService {
     private void saveToOperationLog(boolean success, String responseBody, String errorMsg) {
         try {
             OperationLog log = new OperationLog();
-            log.setUsername("system");
+            log.setOperatorName("system");
             log.setRole("system");
             log.setModule("DDNS更新");
             
             // 根据响应内容确定操作类型
+            boolean ipChanged = false;
             if (success) {
                 if (responseBody != null && responseBody.contains("unchanged")) {
                     log.setAction("IP未变更");
-                    log.setDescription("DDNS更新成功，IP地址未变化，无需更新");
                 } else {
                     log.setAction("IP已更新");
-                    log.setDescription("DDNS更新成功，IP地址已更新");
+                    ipChangeCount++;  // IP变化次数+1
+                    ipChanged = true;
                 }
                 log.setStatus(1);  // 成功
             } else {
                 log.setAction("更新失败");
-                log.setDescription("DDNS更新失败");
                 log.setStatus(0);  // 失败
                 log.setErrorMsg(errorMsg);
             }
+            
+            // 设置日志描述：DDNS更新X次，IP地址变化X次，本次IP有/无更新
+            log.setDescription(String.format("DDNS更新%d次，IP地址变化%d次，本次IP%s更新",
+                    successCount, ipChangeCount, ipChanged ? "有" : "无"));
             
             log.setResponseData(responseBody);
             log.setRequestUrl(ddnsUpdateUrl);

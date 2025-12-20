@@ -89,4 +89,15 @@ public class OperationLogController {
         int count = operationLogService.cleanOldLogs(days);
         return ResponseEntity.ok(ApiResponse.success("已清理 " + count + " 条日志", count));
     }
+
+    /**
+     * 清除所有登录日志
+     * 
+     * @return 删除的日志数量
+     */
+    @DeleteMapping("/clean-login")
+    public ResponseEntity<ApiResponse> cleanLoginLogs() {
+        int count = operationLogService.cleanLoginLogs();
+        return ResponseEntity.ok(ApiResponse.success("已清除 " + count + " 条登录日志", count));
+    }
 }

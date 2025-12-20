@@ -84,11 +84,11 @@ public class LogAspect {
                 
                 // 从请求属性中获取用户信息（JWT过滤器设置的）
                 Long userId = (Long) request.getAttribute("userId");
-                String username = (String) request.getAttribute("username");
+                String operatorName = (String) request.getAttribute("name");  // 操作人姓名
                 String role = (String) request.getAttribute("role");
                 
                 operationLog.setUserId(userId);
-                operationLog.setUsername(username);
+                operationLog.setOperatorName(operatorName);
                 operationLog.setRole(role);
                 operationLog.setRequestUrl(request.getRequestURI());
                 operationLog.setRequestMethod(request.getMethod());

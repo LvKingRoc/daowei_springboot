@@ -11,7 +11,7 @@ import java.util.Date;
 public class OperationLog {
     private Long id;
     private Long userId;
-    private String username;
+    private String operatorName;  // 操作人姓名
     private String role;
     private String module;
     private String action;

@@ -74,12 +74,12 @@ public class OperationLogServiceImpl implements OperationLogService {
 
     /**
      * 保存或更新system用户日志（只保留一份）
-     * 根据username和module查询，存在则更新，不存在则插入
+     * 根据operatorName和module查询，存在则更新，不存在则插入
      */
     @Override
     public void saveOrUpdateSystemLog(OperationLog log) {
         try {
-            OperationLog existingLog = operationLogMapper.selectByUsernameAndModule(log.getUsername(), log.getModule());
+            OperationLog existingLog = operationLogMapper.selectByOperatorNameAndModule(log.getOperatorName(), log.getModule());
             if (existingLog != null) {
                 // 存在则更新
                 log.setId(existingLog.getId());
@@ -91,5 +91,10 @@ public class OperationLogServiceImpl implements OperationLogService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public int cleanLoginLogs() {
+        return operationLogMapper.deleteByAction("LOGIN");
     }
 }
