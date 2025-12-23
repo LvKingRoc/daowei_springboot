@@ -1,12 +1,9 @@
 package com.example.demo.dto;
 
-import lombok.Data;
-
 /**
  * 删除操作结果DTO
  * 用于返回删除操作的详细结果
  */
-@Data
 public class DeleteResultDTO {
     
     /**
@@ -36,6 +33,13 @@ public class DeleteResultDTO {
         this.affectedCount = affectedCount;
         this.description = description;
     }
+
+    public Long getDeletedId() { return deletedId; }
+    public void setDeletedId(Long deletedId) { this.deletedId = deletedId; }
+    public int getAffectedCount() { return affectedCount; }
+    public void setAffectedCount(int affectedCount) { this.affectedCount = affectedCount; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
     
     /**
      * 创建简单删除结果

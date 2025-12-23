@@ -110,6 +110,17 @@ public class SampleController {
             @RequestPart(value = "sample", required = true) String sampleJson,
             @RequestPart(value = "image", required = false) MultipartFile image) {
         Sample updatedSample = sampleService.updateSample(id, sampleJson, image);
+        
+        // 推送样品更新通知（包含完整样品数据，供其他客户端实时同步）
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            String sampleJsonStr = mapper.writeValueAsString(updatedSample);
+            String message = String.format("{\"action\":\"update\",\"sample\":%s}", sampleJsonStr);
+            NotificationController.broadcast("sample_sync", message);
+        } catch (Exception e) {
+            // 序列化失败不影响主流程
+        }
+        
         return ResponseEntity.ok(ApiResponse.success("样品更新成功", updatedSample));
     }
 

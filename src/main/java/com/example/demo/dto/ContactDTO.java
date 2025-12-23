@@ -1,11 +1,8 @@
 package com.example.demo.dto;
 
-import lombok.Data;
-
 /**
  * 联系人数据传输对象
  */
-@Data
 public class ContactDTO {
     
     /**
@@ -27,4 +24,13 @@ public class ContactDTO {
      * 联系电话
      */
     private String phone;
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Long getCustomerId() { return customerId; }
+    public void setCustomerId(Long customerId) { this.customerId = customerId; }
+    public String getContactName() { return contactName; }
+    public void setContactName(String contactName) { this.contactName = contactName; }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 }

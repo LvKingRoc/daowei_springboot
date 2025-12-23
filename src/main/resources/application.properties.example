@@ -1,0 +1,48 @@
+# ===========================================
+# 道威管理系统 - 后端配置模板
+# 复制此文件为 application.properties 并填写真实值
+# ===========================================
+
+# 服务端口
+server.port=661
+
+# 数据库配置 (PostgreSQL)
+spring.datasource.url=jdbc:postgresql://localhost:5432/daowei
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# MyBatis配置
+mybatis.type-aliases-package=com.example.demo.entity
+mybatis.mapper-locations=classpath:mapper/*.xml
+mybatis.configuration.map-underscore-to-camel-case=true
+
+# 图片上传路径 (请修改为实际路径)
+upload.dir=/path/to/uploads/
+sample.image.dir=/path/to/uploads/sampleImage/
+
+# JWT配置
+jwt.secret=your_jwt_secret_key_here
+jwt.expiration=86400000
+
+# 文件上传限制
+spring.servlet.multipart.max-file-size=15MB
+spring.servlet.multipart.max-request-size=15MB
+
+# 日志级别
+logging.level.com.example.demo=INFO
+
+# ===========================================
+# 第三方API配置 (如需使用相关功能)
+# ===========================================
+
+# 百度OCR
+baidu.ocr.app-id=your_app_id
+baidu.ocr.api-key=your_api_key
+baidu.ocr.secret-key=your_secret_key
+
+# 天气API
+weather.api.key=your_weather_api_key
+
+# 日历API
+calendar.api.key=your_calendar_api_key

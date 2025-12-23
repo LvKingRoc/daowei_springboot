@@ -77,8 +77,28 @@ public class OrderController {
     @Log(module = "订单管理", action = "UPDATE", description = "更新订单", entityType = "order", idParamIndex = 0)
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody Order order) {
+        // 获取原订单状态
+        Order oldOrder = orderService.getById(id);
+        String oldStatus = oldOrder != null ? oldOrder.getStatus() : null;
+        
         order.setId(id);
         Order updatedOrder = orderService.update(order);
+        
+        // 推送订单更新通知（包含完整订单数据，供其他客户端实时同步）
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+            String orderJson = mapper.writeValueAsString(updatedOrder);
+            String message = String.format(
+                "{\"action\":\"update\",\"oldStatus\":\"%s\",\"order\":%s}",
+                oldStatus != null ? oldStatus : "",
+                orderJson
+            );
+            NotificationController.broadcast("order_sync", message);
+        } catch (Exception e) {
+            // 序列化失败不影响主流程
+        }
+        
         return ResponseEntity.ok(ApiResponse.success("订单更新成功", updatedOrder));
     }
 
