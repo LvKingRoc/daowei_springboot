@@ -39,8 +39,8 @@ public class DdnsUpdateService {
     @Value("${ddns.update.url:https://ydns.io/hosts/update/ASg4ey8tug5HHnR22UkAQ4RW}")
     private String ddnsUpdateUrl;
 
-    // 是否启用DDNS更新，默认启用
-    @Value("${ddns.update.enabled:true}")
+    // 是否启用DDNS更新，默认禁用（开发模式安全），部署时通过环境变量 DDNS_UPDATE_ENABLED=true 启用
+    @Value("${ddns.update.enabled:false}")
     private boolean ddnsEnabled;
 
     /**
