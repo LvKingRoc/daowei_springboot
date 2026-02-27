@@ -5,6 +5,7 @@ import com.example.demo.common.ApiResponse;
 import com.example.demo.dto.DeleteResultDTO;
 import com.example.demo.entity.Sample;
 import com.example.demo.service.SampleService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -30,6 +31,9 @@ public class SampleController {
      */
     @Autowired
     private SampleService sampleService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * 根据ID获取单个样品信息
@@ -113,8 +117,7 @@ public class SampleController {
         
         // 推送样品更新通知（包含完整样品数据，供其他客户端实时同步）
         try {
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            String sampleJsonStr = mapper.writeValueAsString(updatedSample);
+            String sampleJsonStr = objectMapper.writeValueAsString(updatedSample);
             String message = String.format("{\"action\":\"update\",\"sample\":%s}", sampleJsonStr);
             NotificationController.broadcast("sample_sync", message);
         } catch (Exception e) {

@@ -25,7 +25,7 @@ public interface EmployeeService {
      * @param id 员工ID
      * @return 员工对象，如果不存在则返回null
      */
-    Employee getEmployeeById(Integer id);
+    Employee getEmployeeById(Long id);
 
     /**
      * 添加新员工
@@ -49,5 +49,5 @@ public interface EmployeeService {
      * @param id 要删除的员工ID
      * @return 删除结果的API响应
      */
-    ApiResponse deleteEmployee(Integer id);
+    ApiResponse deleteEmployee(Long id);
 }

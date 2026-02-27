@@ -8,9 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface EmployeeMapper {
-    Employee findById(@Param("id") Integer id);
+    Employee findById(@Param("id") Long id);
     List<Employee> findAll();
     boolean insert(Employee employee);
     boolean update(Employee employee);
-    boolean delete(@Param("id") Integer id);
+    boolean delete(@Param("id") Long id);
 }

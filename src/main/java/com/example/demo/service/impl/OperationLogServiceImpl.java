@@ -72,27 +72,6 @@ public class OperationLogServiceImpl implements OperationLogService {
         return operationLogMapper.deleteByDate(dateStr);
     }
 
-    /**
-     * 保存或更新system用户日志（只保留一份）
-     * 根据operatorName和module查询，存在则更新，不存在则插入
-     */
-    @Override
-    public void saveOrUpdateSystemLog(OperationLog log) {
-        try {
-            OperationLog existingLog = operationLogMapper.selectByOperatorNameAndModule(log.getOperatorName(), log.getModule());
-            if (existingLog != null) {
-                // 存在则更新
-                log.setId(existingLog.getId());
-                operationLogMapper.update(log);
-            } else {
-                // 不存在则插入
-                operationLogMapper.insert(log);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public int cleanLoginLogs() {
         return operationLogMapper.deleteByAction("LOGIN");

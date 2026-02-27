@@ -55,7 +55,7 @@ public class EmployeeController {
      * @return 包含员工信息的HTTP响应，如果员工不存在则返回错误信息
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getEmployeeById(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse> getEmployeeById(@PathVariable Long id) {
         // 根据ID查询员工
         Employee employee = employeeService.getEmployeeById(id);
         if (employee != null) {
@@ -92,7 +92,7 @@ public class EmployeeController {
      */
     @Log(module = "员工管理", action = "UPDATE", description = "更新员工", entityType = "employee", idParamIndex = 0)
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateEmployee(@PathVariable Integer id, @RequestBody Employee employee) {
+    public ResponseEntity<ApiResponse> updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
         // 设置要更新的员工ID
         employee.setId(id);
         // 调用服务更新员工信息
@@ -110,7 +110,7 @@ public class EmployeeController {
      */
     @Log(module = "员工管理", action = "DELETE", description = "删除员工", entityType = "employee", idParamIndex = 0)
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> deleteEmployee(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse> deleteEmployee(@PathVariable Long id) {
         // 调用服务删除员工
         ApiResponse response = employeeService.deleteEmployee(id);
         return response.isSuccess() ? 

@@ -37,8 +37,8 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("查询所有员工 - 有数据")
     void getAllEmployees_hasData() {
-        Employee e1 = createEmployee(1, "张三");
-        Employee e2 = createEmployee(2, "李四");
+        Employee e1 = createEmployee(1L, "张三");
+        Employee e2 = createEmployee(2L, "李四");
         when(employeeMapper.findAll()).thenReturn(Arrays.asList(e1, e2));
 
         List<Employee> result = employeeService.getAllEmployees();
@@ -61,9 +61,9 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("根据ID查询 - 存在")
     void getEmployeeById_found() {
-        when(employeeMapper.findById(1)).thenReturn(createEmployee(1, "张三"));
+        when(employeeMapper.findById(1L)).thenReturn(createEmployee(1L, "张三"));
 
-        Employee result = employeeService.getEmployeeById(1);
+        Employee result = employeeService.getEmployeeById(1L);
 
         assertNotNull(result);
         assertEquals("张三", result.getName());
@@ -72,9 +72,9 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("根据ID查询 - 不存在")
     void getEmployeeById_notFound() {
-        when(employeeMapper.findById(999)).thenReturn(null);
+        when(employeeMapper.findById(999L)).thenReturn(null);
 
-        Employee result = employeeService.getEmployeeById(999);
+        Employee result = employeeService.getEmployeeById(999L);
 
         assertNull(result);
     }
@@ -122,7 +122,7 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("更新员工 - 成功")
     void updateEmployee_success() {
-        Employee employee = createEmployee(1, "更新员工");
+        Employee employee = createEmployee(1L, "更新员工");
         when(employeeMapper.update(any(Employee.class))).thenReturn(true);
 
         ApiResponse response = employeeService.updateEmployee(employee);
@@ -134,7 +134,7 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("更新员工 - 失败")
     void updateEmployee_fail() {
-        Employee employee = createEmployee(999, "更新员工");
+        Employee employee = createEmployee(999L, "更新员工");
         when(employeeMapper.update(any(Employee.class))).thenReturn(false);
 
         ApiResponse response = employeeService.updateEmployee(employee);
@@ -146,7 +146,7 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("更新员工 - 异常")
     void updateEmployee_exception() {
-        Employee employee = createEmployee(1, "更新员工");
+        Employee employee = createEmployee(1L, "更新员工");
         when(employeeMapper.update(any(Employee.class))).thenThrow(new RuntimeException("约束冲突"));
 
         ApiResponse response = employeeService.updateEmployee(employee);
@@ -160,9 +160,9 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("删除员工 - 成功")
     void deleteEmployee_success() {
-        when(employeeMapper.delete(1)).thenReturn(true);
+        when(employeeMapper.delete(1L)).thenReturn(true);
 
-        ApiResponse response = employeeService.deleteEmployee(1);
+        ApiResponse response = employeeService.deleteEmployee(1L);
 
         assertTrue(response.isSuccess());
         assertEquals("员工删除成功", response.getMessage());
@@ -171,9 +171,9 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("删除员工 - 失败")
     void deleteEmployee_fail() {
-        when(employeeMapper.delete(999)).thenReturn(false);
+        when(employeeMapper.delete(999L)).thenReturn(false);
 
-        ApiResponse response = employeeService.deleteEmployee(999);
+        ApiResponse response = employeeService.deleteEmployee(999L);
 
         assertFalse(response.isSuccess());
         assertEquals("员工删除失败", response.getMessage());
@@ -182,9 +182,9 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("删除员工 - 异常")
     void deleteEmployee_exception() {
-        when(employeeMapper.delete(1)).thenThrow(new RuntimeException("外键约束"));
+        when(employeeMapper.delete(1L)).thenThrow(new RuntimeException("外键约束"));
 
-        ApiResponse response = employeeService.deleteEmployee(1);
+        ApiResponse response = employeeService.deleteEmployee(1L);
 
         assertFalse(response.isSuccess());
         assertTrue(response.getMessage().contains("外键约束"));
@@ -192,7 +192,7 @@ class EmployeeServiceImplTest {
 
     // ==================== 辅助方法 ====================
 
-    private Employee createEmployee(Integer id, String name) {
+    private Employee createEmployee(Long id, String name) {
         Employee e = new Employee();
         e.setId(id);
         e.setName(name);

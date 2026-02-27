@@ -209,7 +209,7 @@ public class LogAspect {
             case "order":
                 return orderMapper != null ? orderMapper.getById(id) : null;
             case "employee":
-                return employeeMapper != null ? employeeMapper.findById(id.intValue()) : null;
+                return employeeMapper != null ? employeeMapper.findById(id) : null;
             case "user":
                 return userMapper != null ? userMapper.findById(id) : null;
             default:

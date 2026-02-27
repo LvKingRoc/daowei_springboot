@@ -4,6 +4,7 @@ import com.example.demo.annotation.Log;
 import com.example.demo.common.ApiResponse;
 import com.example.demo.entity.Order;
 import com.example.demo.service.OrderService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,9 @@ public class OrderController {
      */
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * 根据ID获取单个订单
@@ -86,9 +90,7 @@ public class OrderController {
         
         // 推送订单更新通知（包含完整订单数据，供其他客户端实时同步）
         try {
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
-            String orderJson = mapper.writeValueAsString(updatedOrder);
+            String orderJson = objectMapper.writeValueAsString(updatedOrder);
             String message = String.format(
                 "{\"action\":\"update\",\"oldStatus\":\"%s\",\"order\":%s}",
                 oldStatus != null ? oldStatus : "",

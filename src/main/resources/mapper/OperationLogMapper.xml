@@ -76,23 +76,6 @@
         SELECT COUNT(*) FROM operation_log
     </select>
 
-    <select id="selectByOperatorNameAndModule" resultMap="OperationLogMap">
-        SELECT * FROM operation_log 
-        WHERE operator_name = #{operatorName} AND module = #{module}
-        LIMIT 1
-    </select>
-
-    <update id="update" parameterType="com.example.demo.entity.OperationLog">
-        UPDATE operation_log SET
-            action = #{action},
-            description = #{description},
-            response_data = #{responseData},
-            status = #{status},
-            error_msg = #{errorMsg},
-            create_time = NOW()
-        WHERE id = #{id}
-    </update>
-
     <delete id="deleteByAction">
         DELETE FROM operation_log WHERE action = #{action}
     </delete>

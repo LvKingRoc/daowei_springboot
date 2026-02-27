@@ -49,16 +49,6 @@ public interface OperationLogMapper {
     int count();
 
     /**
-     * 根据操作人姓名和模块查询日志（用于system用户单条日志）
-     */
-    OperationLog selectByOperatorNameAndModule(@Param("operatorName") String operatorName, @Param("module") String module);
-
-    /**
-     * 更新日志记录
-     */
-    int update(OperationLog log);
-
-    /**
      * 根据操作类型删除日志
      */
     int deleteByAction(@Param("action") String action);

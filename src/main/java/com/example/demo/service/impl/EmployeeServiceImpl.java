@@ -53,7 +53,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @return 员工对象，如果不存在则返回null
      */
     @Override
-    public Employee getEmployeeById(Integer id) {
+    public Employee getEmployeeById(Long id) {
         // 调用数据访问对象根据ID查询员工
         return employeeMapper.findById(id);
     }
@@ -111,7 +111,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     @Transactional
-    public ApiResponse deleteEmployee(Integer id) {
+    public ApiResponse deleteEmployee(Long id) {
         try {
             // 调用数据访问对象删除员工记录
             boolean result = employeeMapper.delete(id);

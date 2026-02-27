@@ -91,49 +91,6 @@ class OperationLogServiceImplTest {
         assertEquals(10, count);
     }
 
-    // ==================== saveOrUpdateSystemLog 测试 ====================
-
-    @Test
-    @DisplayName("保存系统日志 - 不存在则插入")
-    void saveOrUpdateSystemLog_insert() {
-        OperationLog log = createLog("DDNS更新", "SYSTEM");
-        log.setOperatorName("system");
-        when(operationLogMapper.selectByOperatorNameAndModule("system", "DDNS更新")).thenReturn(null);
-
-        operationLogService.saveOrUpdateSystemLog(log);
-
-        verify(operationLogMapper).insert(log);
-        verify(operationLogMapper, never()).update(any(OperationLog.class));
-    }
-
-    @Test
-    @DisplayName("保存系统日志 - 已存在则更新")
-    void saveOrUpdateSystemLog_update() {
-        OperationLog log = createLog("DDNS更新", "SYSTEM");
-        log.setOperatorName("system");
-
-        OperationLog existing = createLog("DDNS更新", "SYSTEM");
-        existing.setId(99L);
-        when(operationLogMapper.selectByOperatorNameAndModule("system", "DDNS更新")).thenReturn(existing);
-
-        operationLogService.saveOrUpdateSystemLog(log);
-
-        assertEquals(99L, log.getId()); // 应复用已有ID
-        verify(operationLogMapper).update(log);
-        verify(operationLogMapper, never()).insert(any(OperationLog.class));
-    }
-
-    @Test
-    @DisplayName("保存系统日志 - 异常不抛出")
-    void saveOrUpdateSystemLog_exception() {
-        OperationLog log = createLog("DDNS更新", "SYSTEM");
-        log.setOperatorName("system");
-        when(operationLogMapper.selectByOperatorNameAndModule(anyString(), anyString()))
-                .thenThrow(new RuntimeException("数据库异常"));
-
-        assertDoesNotThrow(() -> operationLogService.saveOrUpdateSystemLog(log));
-    }
-
     // ==================== 辅助方法 ====================
 
     private OperationLog createLog(String module, String action) {

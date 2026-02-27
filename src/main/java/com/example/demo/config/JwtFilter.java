@@ -44,6 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/admin/login",
             "/api/user/login",
             "/api/auth/verify",  // Token 校验接口
+            "/api/notifications/subscribe",  // SSE推送（EventSource不支持自定义Header）
             "/sample/"  // 图片资源
     );
 

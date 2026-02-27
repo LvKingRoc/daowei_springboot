@@ -42,11 +42,6 @@ public interface OperationLogService {
     int cleanOldLogs(int days);
 
     /**
-     * 保存或更新system用户日志（只保留一份）
-     */
-    void saveOrUpdateSystemLog(OperationLog log);
-
-    /**
      * 清除所有登录日志
      */
     int cleanLoginLogs();
