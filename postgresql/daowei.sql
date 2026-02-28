@@ -42,7 +42,7 @@ CREATE UNIQUE INDEX idx_admin_username ON admin(username);
 COMMENT ON TABLE admin IS '管理员表';
 
 -- 默认管理员账号
-INSERT INTO admin (username, password, name, token_version) VALUES ('admin', '123456', '系统管理员', 0);
+INSERT INTO admin (username, password, name, token_version) VALUES ('admin', 'admin123', '系统管理员', 0);
 
 -- ----------------------------
 -- 2. 普通用户表
